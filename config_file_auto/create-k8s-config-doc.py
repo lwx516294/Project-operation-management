@@ -17,13 +17,6 @@ class CreateKubernetesConfigFile:
             'register_port': register_port,
         }
 
-        # self.deployment_python_variables = {
-        #     'project_name': project_name,
-        #     'module_name': module_name,
-        #     'harbor_url': harbor_url,
-        #     'stage': stage,
-        # }
-
         self.resource_limit = {
             'java_mem_requests': java_mem_requests,
             'java_mem_limits': java_mem_limits,

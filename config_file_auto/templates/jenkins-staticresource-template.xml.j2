@@ -1,0 +1,140 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.23">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@1.2.9"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.2.9">
+      <jobProperties/>
+      <triggers/>
+      <parameters>
+        <string>release_env</string>
+        <string>version</string>
+      </parameters>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description>静态资源</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>release_env</name>
+          <description>choose release environment
+dev url:{{project_name}}-dev.pystandard.py
+pro url:{{project_name}}-pro.pystandard.py</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>dev</string>
+              <string>pro</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>version</name>
+          <description>choose nvm version</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>6.9.5</string>
+              <string>4.7.3</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>15</daysToKeep>
+        <numToKeep>15</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.54">
+    <script>pipeline {
+    
+    agent {
+        label &apos;192.168.0.156&apos;
+    }
+    
+    options {
+        timeout(time: 30, unit: &apos;MINUTES&apos;) 
+    }
+    
+    parameters { 
+        //构建选项，选择构建环境
+        choice(name: &apos;release_env&apos;,
+                choices:&apos;dev\npro&apos;, 
+                description: &apos;choose release environment\ndev url: {{project_name}}-dev.pystandard.py\npro url:{{project_name}}-pro.pystandard.py&apos;)
+        
+        //构建选项，选择构建nvm版本
+        choice(name: &apos;version&apos;,
+                //choices:&apos;4.7.3\n6.9.5&apos;, 
+                choices:&apos;6.9.5\n4.7.3&apos;, 
+                description: &apos;choose nvm version&apos;)
+    }
+    
+    stages {
+        
+        stage(&apos;准备源码&apos;) {
+            steps {
+                script {
+                    // 类似项目执行更改以下两个参数
+                    svn_addr=&quot;{{svn_address}}&quot;
+                    module_name=&quot;{{module_name}}&quot;
+                    
+                    workdir=&quot;/application/nginx/html/{{project_name}}&quot;
+                    project_name=&quot;{{project_name}}&quot;
+                    r_env=release_env
+                    static_file_path=&quot;${workdir}/${r_env}/${module_name}&quot;
+                    send_mail_to = &apos;huruizhi@pystandard.com&apos;
+                }
+                checkout([$class: &apos;SubversionSCM&apos;, 
+                additionalCredentials: [], 
+                excludedCommitMessages: &apos;&apos;, 
+                excludedRegions: &apos;&apos;, 
+                excludedRevprop: &apos;&apos;, 
+                excludedUsers: &apos;&apos;, 
+                filterChangelog: false, 
+                ignoreDirPropChanges: false, 
+                includedRegions: &apos;&apos;, 
+                locations: [[credentialsId: &apos;dffd18a8-473e-477e-a4dc-4d528fa3e55c&apos;, 
+                            depthOption: &apos;infinity&apos;, 
+                            ignoreExternalsOption: true, 
+                            local: &apos;.&apos;, 
+                            remote: svn_addr ]], 
+                            quietOperation: true, 
+                            workspaceUpdater: [$class: &apos;UpdateUpdater&apos;]])
+            }
+        }
+
+        stage(&apos;构建node.js&apos;){
+            //进行构建
+            steps{
+                sh &quot;rm -rf node_modules||echo &apos;&apos;&quot;
+                sh &quot;source /root/.bashrc &amp;&amp; nvm use ${params.version} &amp;&amp; cnpm install &amp;&amp; npm run build&quot;
+            }
+        }
+        
+        stage(&apos;部署静态文件&apos;) {
+            steps {
+                sh &quot;mkdir -p ${static_file_path}; rm -rf ${static_file_path}/*&quot;
+                sh &quot;/bin/cp -a dist ${static_file_path}&quot;
+                sh &quot;echo &apos;svn url: ${svn_addr}&apos; &gt; ${static_file_path}/README.txt&quot;
+                sh &quot;svn upgrade . &amp;&gt; /dev/null||echo &amp;&gt; /dev/null&quot;
+                sh &quot;export LANG=en_US.UTF-8;svn info . 2&gt;/dev/null|grep -i Revision|awk &apos;{print \&quot;svn revision: \&quot;\$2}&apos; &gt;&gt; ${static_file_path}/README.txt&quot;
+                sh &quot;echo &apos;jenkins job: ${env.JOB_NAME}&apos; &gt;&gt; ${static_file_path}/README.txt&quot;
+                sh &quot;echo &apos;jenkins build env: ${r_env}&apos; &gt;&gt; ${static_file_path}/README.txt&quot;
+                sh &quot;echo &apos;jenkins build nvm version: ${params.version}&apos; &gt;&gt; ${static_file_path}/README.txt&quot;
+                sh &quot;echo &apos;jenkins build number: ${env.BUILD_NUMBER}&apos; &gt;&gt; ${static_file_path}/README.txt&quot;
+            }
+        }
+        
+    }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <authToken>dev</authToken>
+  <disabled>false</disabled>
+</flow-definition>
