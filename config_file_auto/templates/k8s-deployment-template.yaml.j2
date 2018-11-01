@@ -39,7 +39,7 @@ spec:
         env:
         - name: TZ
           value: Asia/Shanghai
-        image: {{harbor_url}}/{{project_name}}/{{module_name}}:latest
+        image: {{harbor_url}}/{{project_name}}/{{module_name}}:{{stage}}
         name: {{project_name}}-{{module_name}}-{{stage}}
         ports:
         - containerPort: 5000

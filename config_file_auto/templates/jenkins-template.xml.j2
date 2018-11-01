@@ -75,9 +75,9 @@ server:192.168.0.200</description>
 
 
 					docker_image=&quot;{{harbor_url}}/${project_name}/${module_name}&quot;
-					deploy_name=&quot;${project_name}-${module_name}-${r_env}&quot;
+					deploy_name=&quot;${project_name}-${module_name}&quot;
 					name_space=&quot;${project_name}-${r_env}&quot;
-					deploy_file=&quot;${deploy_name}-deployment.yaml&quot;
+					deploy_file=&quot;${deploy_name}-deployment-${r_env}.yaml&quot;
 					deploy_path=&quot;/application/k8s-projects/${project_name}/${r_env}/${module_name}/${deploy_file}&quot;
 
 
@@ -89,7 +89,6 @@ server:192.168.0.200</description>
                     old_date=old_date.trim()
 					date=sh returnStdout: true ,script: &quot;echo \$(date &apos;+%F-%H-%M-%S&apos;)&quot;
                     date=date.trim()
-                    sh &quot;mkdir -p ${module_logs_path}&quot;
                     docker_containers_path=&quot;/var/lib/docker/containers&quot;
                 }
                 checkout([$class: &apos;SubversionSCM&apos;,
@@ -135,7 +134,7 @@ server:192.168.0.200</description>
         }
 		stage(&apos;停止服务&apos;) {
             steps {
-				sh &quot;kubectl delete deploy ${deploy_name} -n ${name_space}&quot;
+				sh &quot;kubectl delete deploy ${deploy_name}-${r_env} -n ${name_space} || echo &apos;no deploy&apos;&quot;
             }
         }
 		stage(&apos;启动服务&apos;) {

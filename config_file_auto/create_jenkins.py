@@ -82,7 +82,6 @@ class Jenkins:
         env = Environment(loader=FileSystemLoader(searchpath='./templates'))
         template = env.get_template('jenkins-view-template.xml.j2')
         view_config = template.render(project_name=project_name,modules=modules_list)
-        print(view_config)
         exist = self.server.get_view_name(name)
         if not exist:
             self.server.create_view(name, view_config)
@@ -113,22 +112,22 @@ class Jenkins:
 
             view_job_list.append(job_name)
 
-            print("开始创建模块")
+            print("开始创建任务{job_name}".format(job_name = job_name))
             result = self._create_jenkins_job(job_name, config_xml)
-            #self.server.delete_job(job_name)
-
             if result:
-                print('success!')
+                print('创建成功!')
             else:
                 print("job已经存在,请确认你的配置")
 
-        print("test")
-        self._create_view(project_name, view_job_list)
-        #self.server.delete_view(project_name)
+            #self.server.delete_job(job_name)
 
+        print("开始创建jenkins视图")
+        self._create_view("k8s_view", view_job_list)
+        print("创建成功")
+        #self.server.delete_view("k8s_view")
 
-# if __name__ == '__main__':
-#     j = Jenkins()
-#     j.run(11)
+# jenkins = Jenkins()
+# jenkins.run(11)
+
 
 
