@@ -13,7 +13,7 @@ class SshClient(object):
         self.port = port
         self.user = user
         self.passwd = passwd
-        self.timeout = 10
+        self.timeout = 1000
         self.connection = None
         self.connect()
 
@@ -41,7 +41,7 @@ class SshClient(object):
         else:
             pre_command = ''
         command = '{0}{1}'.format(pre_command, cmd)
-        stdin, stdout, stderr = self.connection.exec_command(command, timeout=3600)
+        stdin,stdout, stderr = self.connection.exec_command(command, timeout=3600)
         return stdout, stderr
 
     @staticmethod
