@@ -1,5 +1,6 @@
-from config_file_auto.config.settings import *
 import os
+from config_file_auto.config.settings import *
+
 
 #创建生成docker-compose目录
 def create_dir(dir_name):
@@ -211,15 +212,6 @@ services:
             with open("{project_name}/docker_compose_config/docker-compose-{stage}.yml".format(project_name=project_name,stage=stage), "w") as f:
                 f.write(docker_compose_info_pro_str_flag)
 
-if __name__ == "__main__":
-    run(11)
-
-
-
-
-
-
-
-# with open("k8stest-pymom/docker_compose_config/docker-compose-pro.yaml",'w') as f:
-#     f.write(s)
+# if __name__ == "__main__":
+#     run(11)
 

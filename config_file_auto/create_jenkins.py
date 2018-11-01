@@ -1,9 +1,7 @@
-import jenkins
-from jinja2 import Environment, FileSystemLoader
 import os
-#from config_file_auto.config.settings import *
+import jenkins
 from config_file_auto.config.settings import *
-
+from jinja2 import Environment, FileSystemLoader
 
 class Jenkins:
     def __init__(self):
@@ -129,8 +127,8 @@ class Jenkins:
         #self.server.delete_view(project_name)
 
 
-if __name__ == '__main__':
-    j = Jenkins()
-    j.run(11)
+# if __name__ == '__main__':
+#     j = Jenkins()
+#     j.run(11)
 
 

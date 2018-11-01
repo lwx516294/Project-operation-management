@@ -1,6 +1,7 @@
 import os
-from jinja2 import Environment, FileSystemLoader
 from config_file_auto.config.settings import *
+from jinja2 import Environment, FileSystemLoader
+
 
 class CreateKubernetesConfigFile:
     def __init__(self, project_name, module_name, stage, register_module_name, harbor_url, register_port, port=None,
@@ -182,8 +183,8 @@ def run(project_id):
                 config.create_k8s_python_config_doc()
 
 
-if __name__ == '__main__':
-    run(11)
+# if __name__ == '__main__':
+#     run(11)
 
 
 
