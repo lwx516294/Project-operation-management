@@ -106,25 +106,32 @@ class Jenkins:
                                                              dev_port, pro_port, harbor_url)
             if module_type == "python":
                 config_xml = self._create_jenkins_python_config_xml(project_name, module_name, svn_address,
-                                                             dev_port, pro_port, harbor_url,python_image="python_{project_name}:3.6.1".format(project_name = project_name))
+                                                             dev_port, pro_port, harbor_url,python_image="harbor.pycf.com/{project_name}/pythonmodule:3.6.1".format(project_name = project_name))
             if module_type == "front":
                 config_xml = self._create_jenkins_staticresource_config_xml(project_name, module_name, svn_address)
 
             view_job_list.append(job_name)
 
             print("开始创建任务{job_name}".format(job_name = job_name))
+            try:
+                self.server.delete_job(job_name)
+            except:
+                pass
             result = self._create_jenkins_job(job_name, config_xml)
             if result:
                 print('创建成功!')
             else:
                 print("job已经存在,请确认你的配置")
 
-            #self.server.delete_job(job_name)
 
+        try:
+            self.server.delete_view("k8s_view")
+        except:
+            pass
         print("开始创建jenkins视图")
         self._create_view("k8s_view", view_job_list)
         print("创建成功")
-        #self.server.delete_view("k8s_view")
+
 
 # jenkins = Jenkins()
 # jenkins.run(11)

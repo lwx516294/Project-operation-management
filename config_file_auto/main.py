@@ -27,9 +27,9 @@ def run(project_id):
     print("配置文件创建完成".center(20,"*"))
 
     #根据项目id创建docker-compose文件
-    print("根据项目id创建docker-compose文件".center(20,"*"))
-    create_docker_compose_config_doc.run(project_id)
-    print("docker-compose文件创建完成".center(20,"*"))
+    # print("根据项目id创建docker-compose文件".center(20,"*"))
+    # create_docker_compose_config_doc.run(project_id)
+    # print("docker-compose文件创建完成".center(20,"*"))
 
     #根据项目id创建jenkins信息
     print("根据项目id创建jenkins信息".center(20,"*"))

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose-pro.yml
+    kompose.version: 1.7.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: pymom-backstage-system-dev
+  name: pymom-backstage-system-dev
+  namespace: pymom-dev
+spec:
+  type: NodePort
+  ports:
+  - name: "6513"
+    port: 6513
+    targetPort: 5000
+    nodePort: 6513
+  selector:
+    io.kompose.service: pymom-backstage-system-dev
+status:
+  loadBalancer: {}

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose-pro.yml
+    kompose.version: 1.7.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: pymom-pythonmodule-dev
+  name: pymom-pythonmodule-dev
+  namespace: pymom-dev
+spec:
+  type: NodePort
+  ports:
+  - name: "6514"
+    port: 6514
+    targetPort: 5000
+    nodePort: 6514
+  selector:
+    io.kompose.service: pymom-pythonmodule-dev
+status:
+  loadBalancer: {}
