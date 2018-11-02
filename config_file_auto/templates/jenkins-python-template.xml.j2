@@ -75,9 +75,9 @@ server:192.168.0.200</description>
 
 
 					docker_image=&quot;{{harbor_url}}/${project_name}/${module_name}&quot;
-					deploy_name=&quot;${project_name}-${module_name}-${r_env}&quot;
+					deploy_name=&quot;${project_name}-${module_name}&quot;
 					name_space=&quot;${project_name}-${r_env}&quot;
-					deploy_file=&quot;${deploy_name}-deployment.yaml&quot;
+					deploy_file=&quot;${deploy_name}-deployment-${r_env}.yaml&quot;
 					deploy_path=&quot;/application/k8s-projects/${project_name}/${r_env}/${module_name}/${deploy_file}&quot;
 
 
@@ -121,7 +121,7 @@ server:192.168.0.200</description>
 		stage(&apos;创建镜像&apos;) {
             steps {
 				sh &quot;/bin/cp /script/dockerfiles/Dockerfile-python ${docker_file_path}/Dockerfile&quot;
-				sh &quot;sed -i &apos;s#python_image#{{python_image}}#g&apos; &quot;
+				sh &quot;sed -i &apos;s#python_image#{{python_image}}#g&apos; ${docker_file_path}/Dockerfile &quot;
 				sh &quot;cd ${docker_file_path} &amp;&amp;docker build -t ${docker_image}:${r_env} .&quot;
             }
         }
@@ -132,7 +132,7 @@ server:192.168.0.200</description>
         }
 		stage(&apos;停止服务&apos;) {
             steps {
-				sh &quot;kubectl delete deploy ${deploy_name}-${r_env} -n ${name_space}&quot;
+				sh &quot;kubectl delete deploy ${deploy_name}-${r_env} -n ${name_space} || echo &apos;no deploy&apos;&quot;
             }
         }
 		stage(&apos;启动服务&apos;) {

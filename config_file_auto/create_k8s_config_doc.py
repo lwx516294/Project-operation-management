@@ -85,7 +85,7 @@ class CreateKubernetesConfigFile:
         env = Environment(loader=FileSystemLoader(searchpath='./templates'))
         template = env.get_template(deployment_template)
         config_doc = template.render(**variables)
-        file_name = "{project_name}-{module_name}-deployment-python-{stage}.yaml".format(project_name = self.deployment_variables["project_name"],
+        file_name = "{project_name}-{module_name}-deployment-{stage}.yaml".format(project_name = self.deployment_variables["project_name"],
                                                                                                 module_name = self.deployment_variables["module_name"],
                                                                                                 stage = self.deployment_variables["stage"])
         dir_name = "{project_name}/{stage}/" \
