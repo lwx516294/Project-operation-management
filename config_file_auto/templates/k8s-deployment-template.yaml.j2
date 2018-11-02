@@ -30,7 +30,7 @@ spec:
         - --server.port=5000
         - --eureka.instance.prefer-ip-address=true
         - --eureka.instance.instance-id=${spring.cloud.client.ipAddress}:${server.port}
-        - --eureka.client.service-url.defaultZone=http://{{register_module_name}}:{{register_port}}/eureka/
+        - --eureka.client.service-url.defaultZone=http://{{project_name}}-{{register_module_name}}-{{stage}}:{{register_port}}/eureka/
         resources:
           limits:
             memory: {{mem_limits}}Mi
