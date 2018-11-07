@@ -80,10 +80,64 @@ def on_line(project_name,online_module_group):
     print("上线完成，请检查上线结果")
     ssh_aliyun.close_connect()
 
+def on_line_static(project_name,online_module_name):
+    date_tag = datetime.now().strftime('%Y-%m-%d.%H-%M-%S')
+    online_host = "192.168.30.41"
+    online_port = "22"
+    online_user = "root"
+    online_passwd = "123456"
+
+    local_static_host = "192.168.30.42"
+    local_static_port = "22"
+    local_static_user = "root"
+    local_static_passwd = "123456"
+
+    print("--------------------项目{0}静态资源{1}开始上线--------------------".format(project_name,online_module_name))
+    #从本地服务器打包文件到本地电脑上
+    print("开始执行步骤一：从本地服务器打包文件到本地电脑上")
+    ssh_local = SshClient(local_static_host, local_static_port, local_static_user, local_static_passwd)
+    #打包
+    zip_cmd = "/usr/bin/zip -rq /application/nginx/html/{project_name}/pro/{online_module_name}.zip /application/nginx/html/{project_name}/pro/{online_module_name}".format(project_name = project_name,online_module_name = online_module_name)
+    ssh_local.exec_cmd(zip_cmd)
+    #暂停3秒等文件生成
+    time.sleep(3)
+
+    #下载到本地并且删除本地服务器上的zip包
+    local_file = "./{online_module_name}.zip".format(online_module_name = online_module_name)
+    remote_file = "/application/nginx/html/{project_name}/pro/{online_module_name}.zip".format(project_name = project_name,online_module_name = online_module_name)
+    delete_cmd = "/usr/bin/rm -rf /application/nginx/html/{project_name}/pro/{online_module_name}.zip".format(project_name = project_name,online_module_name = online_module_name)
+
+    ssh_local.get_file(local_file,remote_file)
+    ssh_local.exec_cmd(delete_cmd)
+    ssh_local.close_connect()
+    print("步骤一完成\n\n\n")
+
+    print("开始步骤二：从本地将文件上传到阿里云")
+    #从本地将文件上传到阿里云
+    ssh_ali = SshClient(online_host, online_port, online_user, online_passwd)
+    #先将已有的静态资源备份
+    backup_cmd = "/usr/bin/mv /application/nginx/html/{project_name}/pro/{online_module_name} /application/nginx/html/{project_name}/pro/{online_module_name}-{date}".format(project_name = project_name,online_module_name = online_module_name,date = date_tag)
+    try:
+        ssh_ali.exec_cmd(backup_cmd)
+    except:
+        pass
+
+    #开始上传
+    local_file = "./{online_module_name}.zip".format(online_module_name = online_module_name)
+    remote_file = "/{online_module_name}.zip".format(online_module_name = online_module_name)
+    ssh_ali.up_file(local_file,remote_file)
+
+    #开始解压并删除文件
+    unzip_cmd = "/usr/bin/unzip -oq -d / /{online_module_name}.zip && /usr/bin/rm -f /{online_module_name}.zip".format(online_module_name = online_module_name)
+    ssh_ali.exec_cmd(unzip_cmd)
+    ssh_ali.close_connect()
+    print("步骤二完成")
+
 def run():
     # 选择项目
     project_id = input("请输入需要上线的项目id: ")
     project_info = get_settings_info(project_id)
+    print(project_info)
     project_name = project_info['project_name']
     stages = project_info['stages']
     modules = project_info['modules']
@@ -114,12 +168,24 @@ def run():
     if select_module_id_group == "all":
         for k, v in module_dict.items():
             online_module_group.append(v)
+        try:
+            online_module_group.remove("console") and online_module_group.remove("static")
+        except:
+            pass
     else:
         select_module_id_group = select_module_id_group.split(",")
         for module_id in select_module_id_group:
             online_module_group.append(module_dict[module_id])
-    on_line(project_name, online_module_group)
+    print(online_module_group)
+    #sys.exit(0)
+    if "static" or "console" in online_module_group:
+        for static_module_name in online_module_group:
+            on_line_static(project_name,static_module_name)
+    else:
+        on_line(project_name, online_module_group)
 
 if __name__ == "__main__":
     run()
+
+
 

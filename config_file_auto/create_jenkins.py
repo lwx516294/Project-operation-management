@@ -125,11 +125,11 @@ class Jenkins:
 
 
         try:
-            self.server.delete_view("k8s_view")
+            self.server.delete_view(project_name)
         except:
             pass
         print("开始创建jenkins视图")
-        self._create_view("k8s_view", view_job_list)
+        self._create_view(project_name, view_job_list)
         print("创建成功")
 
 
