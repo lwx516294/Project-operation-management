@@ -16,10 +16,10 @@ def run(project_id):
                 "local_user" :"root",
                 "local_passwd" : "d!)iW@h1N)(j",
 
-                "online_host" : "192.168.30.42",
+                "online_host" : "120.27.151.167",
                 "online_port" : 22,
                 "online_user" :"root",
-                "online_passwd" : "123456"
+                "online_passwd" : "PycfSystem!@#456"
     }
     #根据项目id创建k8s配置文件
     print("根据项目id创建k8s配置文件".center(20,"*"))
@@ -43,7 +43,7 @@ def run(project_id):
     print("上传完成".center(20,"*"))
 
 if __name__ == "__main__":
-    run(11)
+    run(0)
 
 
 

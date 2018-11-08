@@ -79,6 +79,10 @@ server:192.168.0.200</description>
 					name_space=&quot;${project_name}-${r_env}&quot;
 					deploy_file=&quot;${deploy_name}-deployment-${r_env}.yaml&quot;
 					deploy_path=&quot;/application/k8s-projects/${project_name}/${r_env}/${module_name}/${deploy_file}&quot;
+					service_file=&quot;${deploy_name}-service-${r_env}.yaml&quot;
+                    service_path=&quot;/application/k8s-projects/${project_name}/${r_env}/${module_name}/${service_file}&quot;
+					name_space_file=&quot;${project_name}-${r_env}-namespace.yaml&quot;
+                    name_space_path=&quot;/application/k8s-projects/${project_name}/${r_env}/${name_space_file}&quot;
 
 
                     docker_file_path=&quot;${workdir}/${module_name}_${r_env}&quot;
@@ -137,6 +141,8 @@ server:192.168.0.200</description>
         }
 		stage(&apos;启动服务&apos;) {
             steps {
+                sh &quot;kubectl apply -f ${name_space_path}&quot;
+				sh &quot;kubectl apply -f ${service_path}&quot;
 				sh &quot;kubectl apply -f ${deploy_path}&quot;
             }
         }
