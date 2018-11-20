@@ -43,7 +43,7 @@ def run(project_id):
     print("上传完成".center(20,"*"))
 
 if __name__ == "__main__":
-    run(0)
+    run(19)
 
 
 

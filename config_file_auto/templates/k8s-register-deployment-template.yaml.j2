@@ -26,7 +26,7 @@ spec:
         - -Xms{{java_mem_requests}}m
         - -Xmx{{java_mem_limits}}m
         - /java8/app.jar
-        - --spring.profiles.active=pro
+        - --spring.profiles.active={{stage}}
         - --server.port=5000
         - --eureka.client.register-with-eureka=false
         - --eureka.client.fetch-registry=false
