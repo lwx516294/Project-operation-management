@@ -12,7 +12,7 @@ def run(project_id):
     project_name = project_info['project_name']
     stages = project_info['stages']
     modules = project_info['modules']
-    harbor_url = "registry.cn-qingdao.aliyuncs.com/pystandard"
+    harbor_url = "registry.cn-hangzhou.aliyuncs.com/pystandard"
     register_info = project_info['register']
     docker_compose_info_pro_str_flag = '''version: '3'
 services:
@@ -25,7 +25,7 @@ services:
     for stage in stages:
         if stage == "dev":
             docker_compose_info_dev_str_flag = docker_compose_info_dev_str_flag + '''  {project_name}_{module_name}_{stage}:
-    image: {harbor_url}/{project_name}-{module_name}:latest
+    image: {harbor_url}/{project_name}:{module_name}-latest
     container_name: {project_name}_{module_name}_{stage}
     hostname: {project_name}_{module_name}_{stage}
     restart: always
@@ -55,7 +55,7 @@ services:
             for module in modules:
                 if module[4] == "java":
                     docker_compose_java_info_str = '''  {project_name}_{module_name}_{stage}:
-    image: {harbor_url}/{project_name}-{module_name}:latest
+    image: {harbor_url}/{project_name}:{module_name}-latest
     container_name: {project_name}_{module_name}_{stage}
     hostname: {project_name}_{module_name}_{stage}
     restart: always
@@ -85,7 +85,7 @@ services:
                     docker_compose_info_dev_str_flag = docker_compose_info_dev_str_flag + docker_compose_java_info_str
                 if module[4] == "python":
                     module_python_info_str = '''  {project_name}_{module_name}_{stage}:
-    image: {harbor_url}/{project_name}-{module_name}:latest
+    image: {harbor_url}/{project_name}:{module_name}-latest
     container_name: {project_name}_{module_name}_{stage}
     hostname: {project_name}_{module_name}_{stage}
     restart: always
@@ -119,7 +119,7 @@ services:
                 f.write(docker_compose_info_dev_str_flag)
         if stage == "pro":
             docker_compose_info_pro_str_flag = docker_compose_info_pro_str_flag + '''  {project_name}_{module_name}_{stage}:
-    image: {harbor_url}/{project_name}-{module_name}:latest
+    image: {harbor_url}/{project_name}:{module_name}-latest
     container_name: {project_name}_{module_name}_{stage}
     hostname: {project_name}_{module_name}_{stage}
     restart: always
@@ -149,7 +149,7 @@ services:
             for module in modules:
                 if module[4] == "java":
                     docker_compose_java_info_str = '''  {project_name}_{module_name}_{stage}:
-    image: {harbor_url}/{project_name}-{module_name}:latest
+    image: {harbor_url}/{project_name}:{module_name}-latest
     container_name: {project_name}_{module_name}_{stage}
     hostname: {project_name}_{module_name}_{stage}
     restart: always
@@ -179,7 +179,7 @@ services:
                     docker_compose_info_pro_str_flag = docker_compose_info_pro_str_flag + docker_compose_java_info_str
                 if module[4] == "python":
                     module_python_info_str = '''  {project_name}_{module_name}_{stage}:
-    image: {harbor_url}/{project_name}-{module_name}:latest
+    image: {harbor_url}/{project_name}:{module_name}-latest
     container_name: {project_name}_{module_name}_{stage}
     hostname: {project_name}_{module_name}_{stage}
     restart: always

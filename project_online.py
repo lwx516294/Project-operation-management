@@ -10,15 +10,7 @@ from config_file_auto.config.ssh_tools import *
 
 #开始上线
 def on_line(project_name,online_module_group):
-    online_host = "192.168.30.42"
-    online_port = "22"
-    online_user = "root"
-    online_passwd = "123456"
 
-    local_docker_host = "192.168.30.42"
-    local_docker_port = "22"
-    local_docker_user = "root"
-    local_docker_passwd = "123456"
     # 上线到阿里云的时间tag
     up_to_ali_tag = datetime.now().strftime('%Y-%m-%d.%H-%M-%S')
 
@@ -31,14 +23,14 @@ def on_line(project_name,online_module_group):
         #先在镜像仓库中拉取需要上线的镜像
         cmd_pull_image = "/usr/bin/docker pull harbor.pycf.com/{project_name}/{module_name}:pro".format(project_name = project_name,module_name = on_line_module)
         #打阿里云版本tag
-        cmd_shell_relase_tag = "/usr/bin/docker tag harbor.pycf.com/{project_name}/{module_name}:pro registry.cn-qingdao.aliyuncs.com/pystandard/{project_name}-{module_name}:latest && echo \"\t打tag成功\n\"".format(project_name = project_name,module_name = on_line_module)
+        cmd_shell_relase_tag = "/usr/bin/docker tag harbor.pycf.com/{project_name}/{module_name}:pro registry.cn-hangzhou.aliyuncs.com/pystandard/{project_name}:{module_name}-latest && echo \"\t打tag成功\n\"".format(project_name = project_name,module_name = on_line_module)
         #sout, serr = runCmd(cmd_shell)
         #打备份版本tag
-        cmd_shell_back_tag = "/usr/bin/docker tag harbor.pycf.com/{project_name}/{module_name}:pro registry.cn-qingdao.aliyuncs.com/pystandard/{project_name}-{module_name}:{data_now} && echo \"\t打tag成功\n\"".format(project_name=project_name, module_name=on_line_module,data_now = up_to_ali_tag)
+        cmd_shell_back_tag = "/usr/bin/docker tag harbor.pycf.com/{project_name}/{module_name}:pro registry.cn-hangzhou.aliyuncs.com/pystandard/{project_name}:{module_name}-{data_now} && echo \"\t打tag成功\n\"".format(project_name=project_name, module_name=on_line_module,data_now = up_to_ali_tag)
         #将上线镜像上传到阿里云
-        cmd_shell_up_aliyun_tag = "/usr/bin/docker push registry.cn-qingdao.aliyuncs.com/pystandard/{project_name}-{module_name}:latest && echo \"\n\t上传成功\n\"".format(project_name = project_name,module_name = on_line_module)
+        cmd_shell_up_aliyun_tag = "/usr/bin/docker push registry.cn-hangzhou.aliyuncs.com/pystandard/{project_name}:{module_name}-latest && echo \"\n\t上传成功\n\"".format(project_name = project_name,module_name = on_line_module)
         #将备份镜像上传到阿里云
-        cmd_shell_up_aliyun_backtag = "/usr/bin/docker push registry.cn-qingdao.aliyuncs.com/pystandard/{project_name}-{module_name}:{data_now} && echo \"\n\t上传成功\n\"".format(project_name=project_name, module_name=on_line_module,data_now = up_to_ali_tag)
+        cmd_shell_up_aliyun_backtag = "/usr/bin/docker push registry.cn-hangzhou.aliyuncs.com/pystandard/{project_name}:{module_name}-{data_now} && echo \"\n\t上传成功\n\"".format(project_name=project_name, module_name=on_line_module,data_now = up_to_ali_tag)
         print("\033[1;36;47m从镜像仓库里拉取镜像\n\033[0m")
         stdout, stderr = ssh_local.exec_cmd(cmd_pull_image)
         print(stdout.read().decode("utf-8"))
@@ -88,16 +80,7 @@ def on_line(project_name,online_module_group):
     ssh_aliyun.close_connect()
 
 def on_line_static(project_name,online_module_name):
-    date_tag = datetime.now().strftime('%Y-%m-%d.%H-%M-%S')
-    online_host = "192.168.30.41"
-    online_port = "22"
-    online_user = "root"
-    online_passwd = "123456"
 
-    local_static_host = "192.168.30.42"
-    local_static_port = "22"
-    local_static_user = "root"
-    local_static_passwd = "123456"
 
     print("--------------------项目{0}静态资源{1}开始上线--------------------".format(project_name,online_module_name))
     #从本地服务器打包文件到本地电脑上
@@ -167,7 +150,6 @@ def run():
         i = int(i)
         i += 1
 
-
     select_module_id_group = input("请输入需要上线模块id(若有多个模块上线请以逗号隔开输入，如 1，2，3，若所有模块需要上线请输入all)\n:")
 
     # 将选择的模块添加到列表中
@@ -185,7 +167,10 @@ def run():
             online_module_group.append(module_dict[module_id])
     print(online_module_group)
     #sys.exit(0)
-    if "static" or "console" in online_module_group:
+    if "static" in online_module_group:
+        for static_module_name in online_module_group:
+            on_line_static(project_name,static_module_name)
+    elif "console" in online_module_group:
         for static_module_name in online_module_group:
             on_line_static(project_name,static_module_name)
     else:

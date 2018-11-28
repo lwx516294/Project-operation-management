@@ -11,16 +11,7 @@ from config_file_auto import upload_config_file
 
 
 def run(project_id):
-    host_info={"local_host" : "192.168.0.158",
-                "local_port" : 22,
-                "local_user" :"root",
-                "local_passwd" : "d!)iW@h1N)(j",
 
-                "online_host" : "120.27.151.167",
-                "online_port" : 22,
-                "online_user" :"root",
-                "online_passwd" : "PycfSystem!@#456"
-    }
     #根据项目id创建k8s配置文件
     print("根据项目id创建k8s配置文件".center(20,"*"))
     create_k8s_config_doc.run(project_id)
@@ -43,7 +34,7 @@ def run(project_id):
     print("上传完成".center(20,"*"))
 
 if __name__ == "__main__":
-    run(19)
+    run(18)
 
 
 
