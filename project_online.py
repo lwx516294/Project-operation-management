@@ -28,6 +28,8 @@ def on_line(project_name,online_module_group):
     ssh_local = SshClient(local_docker_host, local_docker_port, local_docker_user, local_docker_passwd)
     for on_line_module in online_module_group:
         print("\n\n\033[1;32;47m--------------------模块{0}开始上线准备--------------------\n\033[0m".format(on_line_module))
+        #先在镜像仓库中拉取需要上线的镜像
+        cmd_pull_image = "/usr/bin/docker pull harbor.pycf.com/{project_name}/{module_name}:pro".format(project_name = project_name,module_name = on_line_module)
         #打阿里云版本tag
         cmd_shell_relase_tag = "/usr/bin/docker tag harbor.pycf.com/{project_name}/{module_name}:pro registry.cn-qingdao.aliyuncs.com/pystandard/{project_name}-{module_name}:latest && echo \"\t打tag成功\n\"".format(project_name = project_name,module_name = on_line_module)
         #sout, serr = runCmd(cmd_shell)
@@ -37,6 +39,11 @@ def on_line(project_name,online_module_group):
         cmd_shell_up_aliyun_tag = "/usr/bin/docker push registry.cn-qingdao.aliyuncs.com/pystandard/{project_name}-{module_name}:latest && echo \"\n\t上传成功\n\"".format(project_name = project_name,module_name = on_line_module)
         #将备份镜像上传到阿里云
         cmd_shell_up_aliyun_backtag = "/usr/bin/docker push registry.cn-qingdao.aliyuncs.com/pystandard/{project_name}-{module_name}:{data_now} && echo \"\n\t上传成功\n\"".format(project_name=project_name, module_name=on_line_module,data_now = up_to_ali_tag)
+        print("\033[1;36;47m从镜像仓库里拉取镜像\n\033[0m")
+        stdout, stderr = ssh_local.exec_cmd(cmd_pull_image)
+        print(stdout.read().decode("utf-8"))
+        print(stderr.read().decode("utf-8"))
+
         print("\033[1;36;47m打阿里云版本tag\n\033[0m")
         stdout, stderr = ssh_local.exec_cmd(cmd_shell_relase_tag)
         print(stdout.read().decode("utf-8"))
