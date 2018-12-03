@@ -78,10 +78,11 @@ services:
       - /java8/app.jar
       - --server.port=5000
       - --spring.profiles.active={stage}
+      - --eureka.client.service-url.defaultZone=http://{project_name}.regiscenter.py:{register_port}/eureka/      
     networks:
       - {stage}
 
-'''.format(project_name = project_name,module_name = module[0],stage = stage,harbor_url = harbor_url,port = module[2])
+'''.format(project_name = project_name,module_name = module[0],stage = stage,harbor_url = harbor_url,port = module[2],register_port = register_info[2])
                     docker_compose_info_dev_str_flag = docker_compose_info_dev_str_flag + docker_compose_java_info_str
                 if module[4] == "python":
                     module_python_info_str = '''  {project_name}_{module_name}_{stage}:
@@ -172,10 +173,11 @@ services:
       - /java8/app.jar
       - --server.port=5000
       - --spring.profiles.active=pro
+      - --eureka.client.service-url.defaultZone=http://{project_name}.regiscenter.py:{register_port}/eureka/         
     networks:
       - {stage}
 
-'''.format(project_name=project_name, module_name=module[0], stage=stage, harbor_url=harbor_url, port=module[1])
+'''.format(project_name=project_name, module_name=module[0], stage=stage, harbor_url=harbor_url, port=module[1],register_port = register_info[1])
                     docker_compose_info_pro_str_flag = docker_compose_info_pro_str_flag + docker_compose_java_info_str
                 if module[4] == "python":
                     module_python_info_str = '''  {project_name}_{module_name}_{stage}:
