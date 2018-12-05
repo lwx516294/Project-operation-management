@@ -18,7 +18,7 @@ def on_line(project_name,online_module_group):
     local_docker_host = "192.168.0.158"
     local_docker_port = "22"
     local_docker_user = "root"
-    local_docker_passwd = "d!)iW@h1N)(j"
+
     # 上线到阿里云的时间tag
     up_to_ali_tag = datetime.now().strftime('%Y-%m-%d.%H-%M-%S')
 
