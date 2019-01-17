@@ -10,14 +10,15 @@ from config_file_auto.config.ssh_tools import *
 
 #开始上线
 def on_line(project_name,online_module_group):
-    online_host = "120.27.151.167"
+    online_host = ""
     online_port = "22"
     online_user = "root"
+    online_passwd = ""
 
-
-    local_docker_host = "192.168.0.158"
+    local_docker_host = ""
     local_docker_port = "22"
     local_docker_user = "root"
+    local_docker_passwd = ""
 
     # 上线到阿里云的时间tag
     up_to_ali_tag = datetime.now().strftime('%Y-%m-%d.%H-%M-%S')
@@ -72,7 +73,7 @@ def on_line(project_name,online_module_group):
         print("--------------------模块{module_name}开始上线--------------------".format(module_name = online_module))
 
         print("开始拉取模块{module_name}阿里云镜像".format(module_name = online_module))
-        stdout,stderr = ssh_aliyun.exec_cmd("/usr/bin/docker pull registry.cn-hangzhou.aliyuncs.com/pystandard/{project_name}:{module_name}-latest && echo \"\n\t上传成功\n\"".format(project_name = project_name,module_name = online_module))
+        stdout,stderr = ssh_aliyun.exec_cmd("/usr/bin/docker pull registry.cn-hangzhou.aliyuncs.com/pystandard/{project_name}:{module_name}-latest && echo \"\n\t拉取成功\n\"".format(project_name = project_name,module_name = online_module))
         print(stdout.read().decode("utf-8"))
         print(stderr.read().decode("utf-8"))
 
@@ -100,12 +101,12 @@ def on_line_static(project_name,online_module_name):
     online_host = "120.27.245.74"
     online_port = "22"
     online_user = "root"
-    online_passwd = "nVP5iRfVA9gZx3hk"
+    online_passwd = "IT71eoA&R&cUdv%"
 
     local_static_host = "192.168.0.156"
     local_static_port = "22"
     local_static_user = "root"
-    local_static_passwd = "d!)iW@h1N)(j"
+    local_static_passwd = "IT71eoA&R&cUdv%"
     print("--------------------项目{0}静态资源{1}开始上线--------------------".format(project_name,online_module_name))
     #从本地服务器打包文件到本地电脑上
     print("开始执行步骤一：从本地服务器打包文件到本地电脑上")
@@ -151,7 +152,7 @@ def run():
     # 选择项目
     project_id = input("请输入需要上线的项目id: ")
     project_info = get_settings_info(project_id)
-    print(project_info)
+    #print(project_info)
     project_name = project_info['project_name']
     stages = project_info['stages']
     modules = project_info['modules']
