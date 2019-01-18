@@ -11,15 +11,15 @@ from config_file_auto import upload_config_file
 
 
 def run(project_id):
-    host_info={"local_host" : "192.168.0.158",
+    host_info={"local_host" : "",
                 "local_port" : 22,
                 "local_user" :"root",
-                "local_passwd" : "IT71eoA&R&cUdv%",
+                "local_passwd" : "",
 
-                "online_host" : "120.27.151.167",
+                "online_host" : "",
                 "online_port" : 22,
                 "online_user" :"root",
-                "online_passwd" : "IT71eoA&R&cUdv%"
+                "online_passwd" : ""
     }
     #根据项目id创建k8s配置文件
     print("根据项目id创建k8s配置文件".center(20,"*"))
